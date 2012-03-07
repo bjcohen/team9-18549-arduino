@@ -23,7 +23,7 @@ void setup() {
   // reset screen
   pinMode(RES, OUTPUT);
   digitalWrite(RES, LOW);
-  delayMicroseconds(3); // 2 us required, so do 3
+  delayMicroseconds(10);
   digitalWrite(RES, HIGH);
   
   // initialize serial connection
@@ -58,28 +58,29 @@ void serialReflect(){
   while (Serial.available()) {
     char c = Serial.read();
     if (c == 'w')
-      y++;
+      y -= 5;
     if (c == 's')
-      y--;
+      y += 5;
     if (c == 'a')
-      x++;
+      x -= 5;
     if (c == 'd')
-      x--;
-      
-    resetScreen();
-    // draw another red circle
-    tft.write(0x43); // draw a circle
-    tft.write((byte)0); // x = 63
-    tft.write(x);
-    tft.write((byte)0); // y = 63
-    tft.write(y);
-    tft.write((byte)0); // r = 34
-    tft.write(0x22);
-    tft.write((byte)0); // color = red
-    tft.write(0x1f);
-    while(tft.available() == 0) { delay(1); }
-    char r = tft.read();
-    delay(10);
+      x += 5;
+    
+    if (c == 'w' || c = 's' || c = 'a' || c == 'd') {
+      resetScreen();
+      // draw another red circle
+      tft.write(0x43); // draw a circle
+      tft.write((byte)0); // x = 63
+      tft.write(x);
+      tft.write((byte)0); // y = 63
+      tft.write(y);
+      tft.write((byte)0); // r = 34
+      tft.write(0x22);
+      tft.write((byte)0); // color = red
+      tft.write(0x1f);
+      while(tft.available() == 0) { delay(1); }
+      char r = tft.read();
+    }
   }
 }
 
