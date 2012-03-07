@@ -5,22 +5,23 @@
 
 #define RX 10
 #define TX 9
+#define RES 13
 
 SoftwareSerial tft(RX, TX);
 
 void setup() {
   // reset screen
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  pinMode(RES, OUTPUT);
+  digitalWrite(RES, LOW);
   delayMicroseconds(3); // 2 us required, so do 3
-  digitalWrite(13, HIGH);
+  digitalWrite(RES, HIGH);
   
   // initialize serial connection
   tft.begin(9600);
 
   // wait 500ms as instructed by documentation
   delay(500);
-  tft.listen();
+    tft.listen();
   
   // send auto-baud
   tft.write(0x55);  

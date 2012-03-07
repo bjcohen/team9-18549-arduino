@@ -5,6 +5,8 @@
 
 #define RX 10
 #define TX 9
+#define RES 13
+#define LEDPIN 13
 
 SoftwareSerial tft(RX, TX);
 
@@ -18,13 +20,11 @@ void setup() {
   // setup serial connection
   Serial.begin(9600);  
 
-  
   // reset screen
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  pinMode(RES, OUTPUT);
+  digitalWrite(RES, LOW);
   delayMicroseconds(3); // 2 us required, so do 3
-  digitalWrite(13, HIGH);
-  
+  digitalWrite(RES, HIGH);
   
   // initialize serial connection
   tft.begin(9600);
@@ -33,7 +33,7 @@ void setup() {
   delay(500);
   tft.listen();
   
-  // send auto-baud
+    // send auto-baud
   tft.write(0x55);  
   while(tft.available() == 0) { delay(1); }
   char r = tft.read();
@@ -41,7 +41,7 @@ void setup() {
 
 
 void loop(){
-  serialReader(); 
+  serialReflect();
 }
 
 void drawPixel(uint8_t buf[]) {
@@ -51,6 +51,37 @@ void drawPixel(uint8_t buf[]) {
   char r = tft.read();
 }
 
+byte x = 0x7f;
+byte y = 0x7f;
+
+void serialReflect(){
+  while (Serial.available()) {
+    char c = Serial.read();
+    if (c == 'w')
+      y++;
+    if (c == 's')
+      y--;
+    if (c == 'a')
+      x++;
+    if (c == 'd')
+      x--;
+      
+    resetScreen();
+    // draw another red circle
+    tft.write(0x43); // draw a circle
+    tft.write((byte)0); // x = 63
+    tft.write(x);
+    tft.write((byte)0); // y = 63
+    tft.write(y);
+    tft.write((byte)0); // r = 34
+    tft.write(0x22);
+    tft.write((byte)0); // color = red
+    tft.write(0x1f);
+    while(tft.available() == 0) { delay(1); }
+    char r = tft.read();
+    delay(10);
+  }
+}
 
 void serialReader(){
   int makeSerialStringPosition;
@@ -83,11 +114,11 @@ void serialReader(){
 void toggleLed(){
  
   if (led == 1){
-    digitalWrite(13, LOW);
+    digitalWrite(LEDPIN, LOW);
     led == 0; 
   }
   else {
-    digitalWrite(13, HIGH);
+    digitalWrite(LEDPIN, HIGH);
     led == 1;     
   }
   
